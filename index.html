@@ -9,48 +9,57 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
         body { font-family: 'Poppins', sans-serif; }
-        .tab-active { border-bottom: 3px solid #dc2626; color: #dc2626; font-weight: bold; }
-        .modal-open { overflow: hidden; }
-
-        header {
-            background-color:#BA8B5D;
-            height: 160px;
-        }
-
-        header > img {
-            width: 175px;
-            margin: auto;
-        }
         
+        /* Correção de UX: Impede o scroll apenas quando o modal está ativo */
+        .modal-open { overflow: hidden; height: 100vh; }
+        
+        .tab-active { border-bottom: 3px solid #dc2626; color: #dc2626; font-weight: bold; }
+        
+        header {
+            background-color: #B88B5D; /* A cor que você escolheu */
+            height: 149px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header img {
+            width: 174px;
+            height: auto;
+            object-contain: contain;
+        }
+
+        /* Estilo para a barra de rolagem horizontal das categorias */
+        nav::-webkit-scrollbar { display: none; }
+        nav { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-stone-100 pb-32">
+<body class="bg-stone-100 pb-40">
 
     <header>
-        <img src="imagens/8.png" alt="">
+        <img src="imagens/8.png" alt="Master Hot Dog Logo">
     </header>
 
     <nav class="sticky top-0 bg-white shadow-md z-40 overflow-x-auto">
-        <div class="flex justify-around min-w-max p-2">
+        <div class="flex justify-around min-w-max p-2 gap-2">
             <button onclick="changeTab('hotdogs')" id="btn-hotdogs" class="tab-btn px-6 py-3 transition tab-active">Hot Dogs</button>
             <button onclick="changeTab('tapiocas')" id="btn-tapiocas" class="tab-btn px-6 py-3 transition">Tapiocas</button>
             <button onclick="changeTab('sobremesas')" id="btn-sobremesas" class="tab-btn px-6 py-3 transition">Sobremesas</button>
             <button onclick="changeTab('bebidas')" id="btn-bebidas" class="tab-btn px-6 py-3 transition">Bebidas</button>
-            
         </div>
     </nav>
 
-    <div id="modal-custom" class="fixed inset-0 bg-black/50 z-[60] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div class="p-4 bg-red-600 text-white flex justify-between">
+    <div id="modal-custom" class="fixed inset-0 bg-black/60 z-[60] hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md rounded-2xl overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div class="p-4 bg-red-600 text-white flex justify-between items-center">
                 <h3 id="modal-title" class="font-bold text-xl">Customizar Pedido</h3>
-                <button onclick="closeModal()"><i data-lucide="x"></i></button>
+                <button onclick="closeModal()" class="p-1 hover:bg-red-700 rounded-full transition"><i data-lucide="x"></i></button>
             </div>
             <div id="modal-content" class="p-6 space-y-4 max-h-[60vh] overflow-y-auto bg-white">
                 </div>
             <div class="p-4 border-t bg-stone-50">
-                <button onclick="confirmCustomization()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition">
-                    Adicionar ao Carrinho
+                <button onclick="confirmCustomization()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg hover:bg-green-700 active:scale-95 transition">
+                    Confirmar e Adicionar
                 </button>
             </div>
         </div>
@@ -58,34 +67,37 @@
 
     <main id="menu-container" class="max-w-2xl mx-auto p-4 grid gap-4"></main>
 
-    <section id="cart-drawer" class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-red-600 p-4 shadow-2xl z-50 transform translate-y-full transition-transform duration-300">
+    <section id="cart-drawer" class="fixed bottom-0 left-0 right-0 bg-white border-t-2 border-red-600 p-4 shadow-[0_-10px_25px_-5px_rgba(0,0,0,0.1)] z-50 transform translate-y-full transition-transform duration-300">
         <div class="max-w-2xl mx-auto">
-            <div id="cart-items" class="max-h-40 overflow-y-auto mb-4 divide-y text-sm"></div>
+            <div class="flex justify-between items-center mb-2">
+                <h4 class="font-bold text-stone-700 uppercase text-xs">Seu Pedido:</h4>
+                <button onclick="toggleCart()" class="text-red-600 text-xs font-bold underline">Minimizar</button>
+            </div>
+            <div id="cart-items" class="max-h-32 overflow-y-auto mb-4 divide-y text-sm border-b"></div>
             
-            <div class="space-y-2 mb-4">
-                <label class="text-xs font-bold text-gray-500 uppercase">Nome e Endereço de Entrega:</label>
-                <input type="text" id="user-address" placeholder="Nome completo, Rua, número e bairro..." class="w-full p-3 border rounded-lg bg-stone-50 focus:ring-2 focus:ring-red-500 outline-none">
+            <div class="space-y-1 mb-4">
+                <label class="text-[10px] font-bold text-gray-500 uppercase">Nome e Endereço para Entrega:</label>
+                <input type="text" id="user-address" placeholder="Nome rua, número e bairro..." class="w-full p-3 border rounded-lg bg-stone-50 focus:ring-2 focus:ring-red-500 outline-none text-sm">
             </div>
 
-            <div class="flex justify-between font-bold text-2xl mb-4 text-green-700">
+            <div class="flex justify-between font-bold text-xl mb-4 text-green-700">
                 <span>Total:</span> <span id="total-price">R$ 0,00</span>
             </div>
             
-            <button onclick="sendOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2">
-                Finalizar Pedido via WhatsApp <i data-lucide="message-circle"></i>
+            <button onclick="sendOrder()" class="w-full bg-green-600 text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-green-700 transition">
+                Enviar para o WhatsApp <i data-lucide="message-circle"></i>
             </button>
         </div>
     </section>
 
     <script>
-        // BANCO DE DADOS LOCAL
         const menu = {
             hotdogs: [{
                 id: 1, 
                 nome: "Hot Dog Especial", 
                 preco: 12.00, 
                 sabores: ["Carne", "Frango", "Misto"],
-                acompanhamentos: ["Milho", "Ervilha", "Tomate", "Cebola", "Passas", "Batata Palha", "Ovo de Codorna", "Azeitona", "Queijo Ralado", "Catupiry", "Cheddar"],
+                acompanhamentos: ["Milho", "Ervilha", "Tomate", "Cebola", "Passas", "Batata Palha", "Ovo de Codorna", "Azeitona", "Queijo Ralado", "Catupiry", "Cheddar", "Maionese", "Ketchup", "Mostarda"]
             }],
             tapiocas: [{
                 id: 2, 
@@ -102,7 +114,7 @@
                 id: 4,
                 nome: "Sobremesas",
                 preco: 7.00,
-                sabores: ["Bombom de Uva", "Mouse de Maracujá", "Torta de Morango"]
+                sabores: ["Bombom de Uva", "Mousse de Maracujá", "Torta de Morango"]
             }],
             bebidas: [{
                 id: 5,
@@ -113,65 +125,67 @@
                 id: 6,
                 nome: "Bebidas de 1 e 2 Litros",
                 preco: 11.00,
-                sabores: ["Coca-cola", "Fanta Laranja", "Guaraná", "Peps"]
-
+                sabores: ["Coca-cola", "Fanta Laranja", "Guaraná", "Pepsi"]
             }]
         };
 
         let cart = [];
         let currentItem = null;
 
-        // FUNÇÃO PARA MUDAR CATEGORIA
         function changeTab(category) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('tab-active'));
             document.getElementById(`btn-${category}`).classList.add('tab-active');
             
             document.getElementById('menu-container').innerHTML = menu[category].map(item => `
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 flex justify-between items-center">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 flex justify-between items-center hover:border-red-200 transition">
                     <div class="flex-1">
                         <h3 class="font-bold text-lg text-gray-800">${item.nome}</h3>
-                        <p class="text-xs text-gray-500">Toque no + para personalizar</p>
+                        <p class="text-[10px] text-gray-400 uppercase font-semibold">Toque no + para escolher sabor</p>
                         <span class="text-red-600 font-bold text-lg block mt-1 font-mono">R$ ${item.preco.toFixed(2)}</span>
                     </div>
-                    <button onclick="openCustomizer(${item.id}, '${category}')" class="bg-red-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition">
+                    <button onclick="openCustomizer(${item.id}, '${category}')" class="bg-red-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg active:scale-90 transition">
                         <i data-lucide="plus"></i>
                     </button>
                 </div>
             `).join('');
+            
             lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // Correção de UX: Volta ao topo
         }
 
-        // ABRIR CUSTOMIZAÇÃO
         function openCustomizer(id, category) {
             currentItem = { ...menu[category].find(i => i.id === id) };
             const modal = document.getElementById('modal-custom');
             const content = document.getElementById('modal-content');
             
-            let html = `<div><p class="font-bold text-red-600 border-b mb-3">1. Escolha o Sabor Principal:</p>`;
+            let html = `<div><p class="font-bold text-stone-600 text-xs mb-3 uppercase tracking-widest">1. Escolha o Sabor:</p>`;
             html += currentItem.sabores.map(s => `
-                <label class="flex items-center gap-3 p-2 bg-stone-50 rounded-lg mb-2">
+                <label class="flex items-center gap-3 p-3 bg-stone-50 rounded-xl mb-2 cursor-pointer border border-transparent hover:border-red-200 transition">
                     <input type="radio" name="sabor" value="${s}" checked class="w-5 h-5 accent-red-600"> 
-                    <span class="font-medium">${s}</span>
+                    <span class="font-medium text-stone-800">${s}</span>
                 </label>`).join('');
             html += `</div>`;
 
             if(currentItem.acompanhamentos) {
-                html += `<div class="mt-6"><p class="font-bold text-red-600 border-b mb-3">2. Acompanhamentos:</p>`;
-                html += currentItem.acompanhamentos.map(a => `
-                    <label class="flex items-center gap-3 p-2 border-b border-stone-100">
+                html += `<div class="mt-6"><p class="font-bold text-stone-600 text-xs mb-3 uppercase tracking-widest">2. Adicionais/Molhos:</p>`;
+                html += `<div class="grid grid-cols-1 gap-1">` + currentItem.acompanhamentos.map(a => `
+                    <label class="flex items-center gap-3 p-2 border-b border-stone-100 cursor-pointer">
                         <input type="checkbox" class="opt-check w-5 h-5 accent-red-600" value="${a}" checked> 
                         <span class="text-sm text-gray-700">${a}</span>
-                    </label>`).join('');
-                html += `</div>`;
+                    </label>`).join('') + `</div></div>`;
             }
 
             content.innerHTML = html;
             modal.classList.remove('hidden');
-            document.body.classList.add('modal-open');
+            document.body.classList.add('modal-open'); // Trava o fundo
             lucide.createIcons();
         }
 
-        // CONFIRMAR E ADD NO CARRINHO
+        function closeModal() {
+            document.getElementById('modal-custom').classList.add('hidden');
+            document.body.classList.remove('modal-open'); // Libera o fundo
+        }
+
         function confirmCustomization() {
             const sabor = document.querySelector('input[name="sabor"]:checked').value;
             const extras = Array.from(document.querySelectorAll('.opt-check:checked')).map(el => el.value);
@@ -179,7 +193,7 @@
             cart.push({
                 nome: currentItem.nome,
                 preco: currentItem.preco,
-                detalhes: `Sabor: ${sabor} | Com: ${extras.length > 0 ? extras.join(', ') : 'Sem adicionais'}`
+                detalhes: `Sabor: ${sabor}${extras.length > 0 ? ' | Com: ' + extras.join(', ') : ''}`
             });
             
             closeModal();
@@ -192,14 +206,14 @@
             const totalDisplay = document.getElementById('total-price');
             
             list.innerHTML = cart.map((i, idx) => `
-                <div class="py-3 flex justify-between items-start">
+                <div class="py-3 flex justify-between items-start animate-in slide-in-from-right duration-200">
                     <div class="pr-4">
-                        <div class="font-bold text-gray-800">${i.nome}</div>
-                        <div class="text-[10px] text-gray-400 leading-tight">${i.detalhes}</div>
+                        <div class="font-bold text-gray-800 text-xs">${i.nome}</div>
+                        <div class="text-[10px] text-gray-400 leading-tight mt-1">${i.detalhes}</div>
                     </div>
                     <div class="flex flex-col items-end">
                         <span class="font-bold text-red-600 font-mono text-sm">R$ ${i.preco.toFixed(2)}</span>
-                        <button onclick="removeFromCart(${idx})" class="text-gray-300 hover:text-red-500 mt-1"><i data-lucide="trash-2" class="w-4"></i></button>
+                        <button onclick="removeFromCart(${idx})" class="text-gray-400 hover:text-red-500 mt-2"><i data-lucide="trash-2" class="w-4"></i></button>
                     </div>
                 </div>
             `).join('');
@@ -211,25 +225,21 @@
 
         function removeFromCart(index) {
             cart.splice(index, 1);
-            if(cart.length === 0) document.getElementById('cart-drawer').classList.add('translate-y-full');
+            if(cart.length === 0) toggleCart();
             updateCart();
         }
 
-        function closeModal() {
-            document.getElementById('modal-custom').classList.add('hidden');
-            document.body.classList.remove('modal-open');
+        function toggleCart() {
+            document.getElementById('cart-drawer').classList.add('translate-y-full');
         }
 
-        // ENVIO FINAL PARA O SEU WHATSAPP
         function sendOrder() {
             const address = document.getElementById('user-address').value;
             if(cart.length === 0) return alert("Seu carrinho está vazio!");
             if(!address) return alert("Por favor, digite o endereço de entrega!");
             
-            // AGORA COM SEU NÚMERO CADASTRADO
             const numero = "5581989369208"; 
-            
-            const listaPedido = cart.map(i => `✅ *${i.nome}*%0A  _${i.detalhes}_`).join('%0A%0A');
+            const listaPedido = cart.map(i => `✅ *${i.nome}*%0A_(${i.detalhes})_`).join('%0A%0A');
             const totalFinal = document.getElementById('total-price').innerText;
             
             const text = `*NOVO PEDIDO - MASTER HOT DOG*%0A` +
@@ -237,12 +247,12 @@
                          `${listaPedido}%0A%0A` +
                          `--------------------------------%0A` +
                          `*TOTAL:* ${totalFinal}%0A` +
-                         `*NOME E ENDEREÇO:* ${address}`;
+                         `*ENTREGA:* ${address}`;
 
             window.open(`https://wa.me/${numero}?text=${text}`);
         }
 
-        // Inicializar na aba de Hot Dogs
+        // Inicialização
         changeTab('hotdogs');
     </script>
 </body>
