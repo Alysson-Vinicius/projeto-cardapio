@@ -201,12 +201,22 @@
             document.getElementById('cart-drawer').classList.remove('translate-y-full');
         }
 
+        // Função para abrir o carrinho
+        function openCart() {
+            document.getElementById('cart-drawer').classList.remove('translate-y-full');
+            document.getElementById('btn-float-cart').classList.add('hidden'); // Esconde o botão quando o carrinho abre
+        }
+
+        // Atualize a função updateCart para gerenciar o botão flutuante
         function updateCart() {
             const list = document.getElementById('cart-items');
             const totalDisplay = document.getElementById('total-price');
+            const floatBtn = document.getElementById('btn-float-cart');
+            const countDisplay = document.getElementById('cart-count-float');
             
+            // Atualiza a lista visual
             list.innerHTML = cart.map((i, idx) => `
-                <div class="py-3 flex justify-between items-start animate-in slide-in-from-right duration-200">
+                <div class="py-3 flex justify-between items-start">
                     <div class="pr-4">
                         <div class="font-bold text-gray-800 text-xs">${i.nome}</div>
                         <div class="text-[10px] text-gray-400 leading-tight mt-1">${i.detalhes}</div>
@@ -218,8 +228,24 @@
                 </div>
             `).join('');
             
+            // Calcula o total
             const total = cart.reduce((acc, item) => acc + item.preco, 0);
             totalDisplay.innerText = `R$ ${total.toFixed(2)}`;
+            
+            // Atualiza o contador do botão flutuante
+            countDisplay.innerText = cart.length;
+
+            // Gerencia o botão flutuante
+            if (cart.length > 0) {
+                // Se o carrinho estiver minimizado (com a classe translate-y-full), mostra o botão
+                if (document.getElementById('cart-drawer').classList.contains('translate-y-full')) {
+                    floatBtn.classList.remove('hidden');
+                }
+            } else {
+                floatBtn.classList.add('hidden');
+                document.getElementById('cart-drawer').classList.add('translate-y-full');
+            }
+            
             lucide.createIcons();
         }
 
@@ -229,8 +255,13 @@
             updateCart();
         }
 
+        // Função para minimizar/fechar o carrinho
         function toggleCart() {
             document.getElementById('cart-drawer').classList.add('translate-y-full');
+            // Só mostra o botão flutuante se houver itens no carrinho
+            if (cart.length > 0) {
+                document.getElementById('btn-float-cart').classList.remove('hidden');
+            }
         }
 
         function sendOrder() {
@@ -255,5 +286,12 @@
         // Inicialização
         changeTab('hotdogs');
     </script>
+
+    <div id="btn-float-cart" class="fixed bottom-6 right-6 z-[45] hidden">
+    <button onclick="openCart()" class="bg-red-600 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center animate-bounce">
+        <i data-lucide="shopping-cart"></i>
+        <span id="cart-count-float" class="absolute -top-1 -right-1 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full border-2 border-white">0</span>
+    </button>
+    </div>
 </body>
 </html>
