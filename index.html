@@ -76,6 +76,16 @@
             </div>
             <div id="cart-items" class="max-h-32 overflow-y-auto mb-4 divide-y text-sm border-b"></div>
             
+            <div class="space-y-2 mb-4">
+                <label class="text-[10px] font-bold text-gray-500 uppercase">Selecione seu Bairro (Taxa de Entrega):</label>
+                <select id="bairro-entrega" onchange="updateCart()" class="w-full p-3 border rounded-lg bg-stone-50 focus:ring-2 focus:ring-red-500 outline-none text-sm">
+                    <option value="0">Selecione o bairro...</option>
+                    <option value="3">Xique-xique (R$ 3,00)</option>
+                    <option value="3">Andorinha (R$ 3,00)</option>
+                    <option value="5">Outros Bairros (R$ 5,00)</option>
+                </select>
+            </div>
+
             <div class="space-y-1 mb-4">
                 <label class="text-[10px] font-bold text-gray-500 uppercase">Nome e Endereço para Entrega:</label>
                 <input type="text" id="user-address" placeholder="Nome rua, número e bairro..." class="w-full p-3 border rounded-lg bg-stone-50 focus:ring-2 focus:ring-red-500 outline-none text-sm">
@@ -217,10 +227,9 @@
         function updateCart() {
             const list = document.getElementById('cart-items');
             const totalDisplay = document.getElementById('total-price');
-            const floatBtn = document.getElementById('btn-float-cart');
-            const countDisplay = document.getElementById('cart-count-float');
+            const taxaFrete = parseFloat(document.getElementById('bairro-entrega').value) || 0;
             
-            // Atualiza a lista visual
+            // Atualiza a lista visual dos itens
             list.innerHTML = cart.map((i, idx) => `
                 <div class="py-3 flex justify-between items-start">
                     <div class="pr-4">
@@ -234,24 +243,19 @@
                 </div>
             `).join('');
             
-            // Calcula o total
-            const total = cart.reduce((acc, item) => acc + item.preco, 0);
-            totalDisplay.innerText = `R$ ${total.toFixed(2)}`;
-            
-            // Atualiza o contador do botão flutuante
-            countDisplay.innerText = cart.length;
+            // Calcula os produtos + o frete
+            const totalProdutos = cart.reduce((acc, item) => acc + item.preco, 0);
+            const totalGeral = totalProdutos + taxaFrete;
 
-            // Gerencia o botão flutuante
-            if (cart.length > 0) {
-                // Se o carrinho estiver minimizado (com a classe translate-y-full), mostra o botão
-                if (document.getElementById('cart-drawer').classList.contains('translate-y-full')) {
-                    floatBtn.classList.remove('hidden');
-                }
-            } else {
-                floatBtn.classList.add('hidden');
-                document.getElementById('cart-drawer').classList.add('translate-y-full');
-            }
+            // Se houver frete, mostra um aviso pequeno
+            const textoFrete = taxaFrete > 0 ? `<br><span class="text-xs text-gray-400 font-normal">(Incluindo R$ ${taxaFrete.toFixed(2)} de entrega)</span>` : "";
             
+            totalDisplay.innerHTML = `R$ ${totalGeral.toFixed(2)}${textoFrete}`;
+            
+            // Atualiza contador do botão flutuante se ele existir
+            const countDisplay = document.getElementById('cart-count-float');
+            if(countDisplay) countDisplay.innerText = cart.length;
+
             lucide.createIcons();
         }
 
@@ -272,19 +276,25 @@
 
         function sendOrder() {
             const address = document.getElementById('user-address').value;
+            const bairroSelect = document.getElementById('bairro-entrega');
+            const bairroNome = bairroSelect.options[bairroSelect.selectedIndex].text;
+            const taxaFrete = parseFloat(bairroSelect.value);
+
             if(cart.length === 0) return alert("Seu carrinho está vazio!");
-            if(!address) return alert("Por favor, digite o endereço de entrega!");
+            if(taxaFrete === 0) return alert("Por favor, selecione o bairro para o frete!");
+            if(!address) return alert("Por favor, digite o endereço completo!");
             
             const numero = "5581989888228"; 
             const listaPedido = cart.map(i => `✅ *${i.nome}*%0A_(${i.detalhes})_`).join('%0A%0A');
-            const totalFinal = document.getElementById('total-price').innerText;
+            const totalFinal = document.getElementById('total-price').innerText.split('(')[0]; // Pega só o valor R$
             
             const text = `*NOVO PEDIDO - MASTER HOT DOG*%0A` +
-                         `--------------------------------%0A%0A` +
-                         `${listaPedido}%0A%0A` +
-                         `--------------------------------%0A` +
-                         `*TOTAL:* ${totalFinal}%0A` +
-                         `*ENTREGA:* ${address}`;
+                        `--------------------------------%0A%0A` +
+                        `${listaPedido}%0A%0A` +
+                        `--------------------------------%0A` +
+                        `*ENTREGA PARA:* ${bairroNome}%0A` +
+                        `*ENDEREÇO:* ${address}%0A` +
+                        `*TOTAL COM FRETE:* ${totalFinal}`;
 
             window.open(`https://wa.me/${numero}?text=${text}`);
         }
