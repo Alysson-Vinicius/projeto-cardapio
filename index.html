@@ -77,12 +77,13 @@
             <div id="cart-items" class="max-h-32 overflow-y-auto mb-4 divide-y text-sm border-b"></div>
             
             <div class="space-y-2 mb-4">
-                <label class="text-[10px] font-bold text-gray-500 uppercase">Selecione seu Bairro (Taxa de Entrega):</label>
+                <label class="text-[10px] font-bold text-gray-500 uppercase">Forma de Entrega / Bairro:</label>
                 <select id="bairro-entrega" onchange="updateCart()" class="w-full p-3 border rounded-lg bg-stone-50 focus:ring-2 focus:ring-red-500 outline-none text-sm">
-                    <option value="0">Selecione o bairro...</option>
-                    <option value="3">Xique-xique (R$ 3,00)</option>
-                    <option value="3">Andorinha (R$ 3,00)</option>
-                    <option value="5">Outros Bairros (R$ 5,00)</option>
+                    <option value="">Selecione uma opção...</option>
+                    <option value="0">Vou retirar no local (Grátis)</option>
+                    <option value="3">Xique-xique (Taxa R$ 3,00)</option>
+                    <option value="3">Andorinha (Taxa R$ 3,00)</option>
+                    <option value="5">Outros Bairros (Taxa R$ 5,00)</option>
                 </select>
             </div>
 
@@ -282,24 +283,40 @@
         function sendOrder() {
             const address = document.getElementById('user-address').value;
             const bairroSelect = document.getElementById('bairro-entrega');
+            
+            // Verifica se o usuário selecionou alguma opção do menu
+            if (bairroSelect.value === "") {
+                return alert("Por favor, selecione se vai retirar ou o bairro para entrega!");
+            }
+
             const bairroNome = bairroSelect.options[bairroSelect.selectedIndex].text;
             const taxaFrete = parseFloat(bairroSelect.value);
 
             if(cart.length === 0) return alert("Seu carrinho está vazio!");
-            if(taxaFrete === 0) return alert("Por favor, selecione o bairro para o frete!");
-            if(!address) return alert("Por favor, digite o endereço completo!");
             
-            const numero = "5581989888228"; 
+            // Se não for retirada (valor > 0), o endereço é obrigatório
+            if(taxaFrete > 0 && !address) {
+                return alert("Para entregas, o endereço completo é obrigatório!");
+            }
+            
+            // Se for retirada e não tiver nome, pelo menos peça o nome
+            if(taxaFrete === 0 && !address) {
+                return alert("Por favor, digite seu nome no campo de endereço para identificarmos sua retirada!");
+            }
+
+            const numero = "5581989369208"; 
             const listaPedido = cart.map(i => `✅ *${i.nome}*%0A_(${i.detalhes})_`).join('%0A%0A');
-            const totalFinal = document.getElementById('total-price').innerText.split('(')[0]; // Pega só o valor R$
+            
+            // Pega o total exibido na tela (limpa o texto extra do frete se houver)
+            const totalExibido = document.getElementById('total-price').innerText.split('\n')[0];
             
             const text = `*NOVO PEDIDO - MASTER HOT DOG*%0A` +
                         `--------------------------------%0A%0A` +
                         `${listaPedido}%0A%0A` +
                         `--------------------------------%0A` +
-                        `*ENTREGA PARA:* ${bairroNome}%0A` +
-                        `*ENDEREÇO:* ${address}%0A` +
-                        `*TOTAL COM FRETE:* ${totalFinal}`;
+                        `*FORMA:* ${bairroNome}%0A` +
+                        `*CLIENTE/ENDEREÇO:* ${address}%0A` +
+                        `*TOTAL GERAL:* ${totalExibido}`;
 
             window.open(`https://wa.me/${numero}?text=${text}`);
         }
