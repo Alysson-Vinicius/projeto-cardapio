@@ -27,7 +27,7 @@
         header img {
             width: 280px;
             height: auto;
-            object-contain: contain;
+            object-fit: contain; /* Ajustado de object-contain para object-fit */
         }
 
         /* Estilo para a barra de rolagem horizontal das categorias */
@@ -45,7 +45,7 @@
         <div class="flex justify-around min-w-max p-2 gap-2">
             <button onclick="changeTab('hotdogs')" id="btn-hotdogs" class="tab-btn px-6 py-3 transition tab-active">Hot Dogs</button>
             <button onclick="changeTab('tapiocas')" id="btn-tapiocas" class="tab-btn px-6 py-3 transition">Tapiocas</button>
-            <button onclick="changeTab('sobremesas')" id="btn-sobremesas" class="tab-btn px-6 py-3 transition">Sobremesas</button>
+            <button onclick="changeTab('cuscuz')" id="btn-cuscuz" class="tab-btn px-6 py-3 transition">Cuscuz Recheado</button> <button onclick="changeTab('sobremesas')" id="btn-sobremesas" class="tab-btn px-6 py-3 transition">Sobremesas</button>
             <button onclick="changeTab('bebidas')" id="btn-bebidas" class="tab-btn px-6 py-3 transition">Bebidas</button>
         </div>
     </nav>
@@ -109,13 +109,13 @@
                 nome: "Hot Dog Tradicional", 
                 preco: 12.00, 
                 sabores: ["Carne", "Frango", "Misto"],
-                acompanhamentos: ["COMPLETO (deixe só este vinculado)","Salsicha","Tomate", "Cebola","Milho", "Ervilha", "Passas", "Batata Palha", "Ovo de Codorna", "Azeitona", "Queijo Ralado", "Catupiry", "Cheddar", "Maionese Verde", "Cream Cheese"]
+                acompanhamentos: ["Salsicha","Tomate", "Cebola","Milho", "Ervilha", "Passas", "Batata Palha", "Ovo de Codorna", "Azeitona", "Queijo Ralado", "Catupiry", "Cheddar", "Maionese Verde", "Cream Cheese"]
             }, {
                 id: 2,
                 nome: "Hot Dog Gourmet",
                 preco: 20.00,
                 sabores: ["Carne", "Frango", "Misto"],
-                acompanhamentos: ["COMPLETO (deixe só este vinculado)","Salsicha","Tomate", "Cebola","Milho", "Ervilha", "Passas", "Batata Palha", "Ovo de Codorna", "Azeitona", "Queijo Ralado", "Bacon", "Queijo Flambado", "Purê de Batata", "Catupiry", "Cheddar", "Maionese Verde", "Cream Cheese"]
+                acompanhamentos: ["Salsicha","Tomate", "Cebola","Milho", "Ervilha", "Passas", "Batata Palha", "Ovo de Codorna", "Azeitona", "Queijo Ralado", "Bacon", "Queijo Flambado", "Purê de Batata", "Catupiry", "Cheddar", "Maionese Verde", "Cream Cheese"]
             }],
             tapiocas: [{
                 id: 3, 
@@ -126,23 +126,25 @@
                 id: 4,
                 nome: "Tapioca Tradicional 2 Sabores",
                 preco: 8.00,
-                sabores: ["Coco com Queijo de Coalho", "Frango com Queijo", "Pizza (mussarela, presunto e orégano)"]
-            }, {
-                id: 5,
-                nome: "Tapioca Doce", 
-                preco: 12.00,
-                sabores: ["Morango Com NUTELA"]},  
+                sabores: ["Coco com Queijo de Coalho", "Frango com Queijo",]
+            },  
                 {
-                id: 6, 
+                id: 5, 
                 nome: "Tapioca Especial", 
                 preco: 10.00, 
-                sabores: ["Três Queijos (coalho, provolone e do reino)", "Carne de Sol com Queijo", "Charque com Queijo"]
+                sabores: ["Três Queijos (coalho, provolone e do reino)", "Carne de Sol com Queijo", "Charque com Queijo", "Calabresa com Queijo"]
+            }],
+            cuscuz: [{
+                id: 6, 
+                nome: "Cuscuz Recheado", 
+                preco: 15.00, 
+                sabores: ["Carne de Sol com Queijo", "Charque com Queijo", "Calabresa com Queijo"]
             }],
             sobremesas: [{
                 id: 7,
                 nome: "Sobremesas",
                 preco: 8.00,
-                sabores: ["Bombom de Uva", "Bombom de Morango", "Mousse de Maracujá", "Pudim"]
+                sabores: ["Indisponível no momento"]
             }],
             bebidas: [{
                 id: 8,
